@@ -7,6 +7,7 @@ from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
+import re
 
 import time
 
@@ -56,7 +57,18 @@ for code in cityCodes:
         temp['dong'] = list()
 
         for dong in tempDong:
+
+            # 괄호 안에 지역
+            alterGu = ""
+
+            # 괄호가 있으면
+            if '(' in dong:
+                alterGu = re.findall('\(([^)]+)', dong)[0]
+                dong = re.sub(r'\([^)]*\)', '', dong)
+
             if '·' not in dong:
+                if alterGu != "":
+                    dong = dong + "_" + alterGu
                 temp['dong'].append(dong)
             else:
                 if '종로' in dong:
@@ -72,6 +84,7 @@ for code in cityCodes:
                             jongloSplit[idx] = pre + jonglo
                         else:
                             jongloSplit[idx] = pre + jonglo + post
+
                     temp['dong'].extend(jongloSplit)
 
                 elif dong[len(dong)-2:] == '가동':
@@ -93,7 +106,10 @@ for code in cityCodes:
                                 dongSplit[idx] = pre + d + '가동'
                             else:
                                 dongSplit[idx] = d + '가동'
+                        if alterGu != "":
+                            dongSplit[idx] = dongSplit[idx] + "_" + alterGu
                     temp['dong'].extend(dongSplit)
+                    print(dongSplit)
                 else:
                     dongSplit = dong.split('·')
                     pre = dongSplit[0][:len(dongSplit[0]) - 1]
@@ -111,12 +127,26 @@ for code in cityCodes:
                                 dongSplit[idx] = pre + d + '동'
                             else:
                                 dongSplit[idx] = d + '동'
+                        if alterGu != "":
+                            dongSplit[idx] = dongSplit[idx] + "_" + alterGu
                     temp['dong'].extend(dongSplit)
         # print(temp)
 
         for d in temp['dong']:
+
+            if '_' in d :
+                temp['gu'] = d.split('_')[1]
+                d = d.split('_')[0]
+
             doc_ref = db.collection(u'district').document()
             doc_ref.set({
+                u'Si': temp['si'],
+                u'Gu':temp['gu'],
+                u'Dong': d,
+                u'Congress': temp['electionDistrictName']
+            })
+
+            print({
                 u'Si': temp['si'],
                 u'Gu':temp['gu'],
                 u'Dong': d,
@@ -163,7 +193,18 @@ for code in cityCodes:
         temp['dong'] = list()
 
         for dong in tempDong:
+
+            # 괄호 안에 지역
+            alterGu = ""
+
+            # 괄호가 있으면
+            if '(' in dong:
+                alterGu = re.findall('\(([^)]+)', dong)[0]
+                dong = re.sub(r'\([^)]*\)', '', dong)
+
             if '·' not in dong:
+                if alterGu != "":
+                    dong = dong + "_" + alterGu
                 temp['dong'].append(dong)
             else:
                 if '종로' in dong:
@@ -200,6 +241,8 @@ for code in cityCodes:
                                 dongSplit[idx] = pre + d + '가동'
                             else:
                                 dongSplit[idx] = d + '가동'
+                        if alterGu != "":
+                            dongSplit[idx] = dongSplit[idx] + "_" + alterGu
                     temp['dong'].extend(dongSplit)
                 else:
                     dongSplit = dong.split('·')
@@ -218,10 +261,17 @@ for code in cityCodes:
                                 dongSplit[idx] = pre + d + '동'
                             else:
                                 dongSplit[idx] = d + '동'
+                        if alterGu != "":
+                            dongSplit[idx] = dongSplit[idx] + "_" + alterGu
                     temp['dong'].extend(dongSplit)
         # print(temp)
 
         for d in temp['dong']:
+
+            if '_' in d :
+                temp['gu'] = d.split('_')[1]
+                d = d.split('_')[0]
+
             district_ref = db.collection(u'district')
             query_ref = district_ref.where(u'Si', u'==', temp['si']) \
                 .where(u'Gu', u'==', temp['gu'])\
@@ -271,7 +321,17 @@ for code in cityCodes:
         tempDong = str.strip(tr.select('td')[3].contents[0]).split(', ')
         temp['dong'] = list()
         for dong in tempDong:
+            # 괄호 안에 지역
+            alterGu = ""
+
+            # 괄호가 있으면
+            if '(' in dong:
+                alterGu = re.findall('\(([^)]+)', dong)[0]
+                dong = re.sub(r'\([^)]*\)', '', dong)
+
             if '·' not in dong:
+                if alterGu != "":
+                    dong = dong + "_" + alterGu
                 temp['dong'].append(dong)
             else:
                 if '종로' in dong:
@@ -308,6 +368,8 @@ for code in cityCodes:
                                 dongSplit[idx] = pre + d + '가동'
                             else:
                                 dongSplit[idx] = d + '가동'
+                        if alterGu != "":
+                            dongSplit[idx] = dongSplit[idx] + "_" + alterGu
                     temp['dong'].extend(dongSplit)
                 else:
                     dongSplit = dong.split('·')
@@ -326,10 +388,17 @@ for code in cityCodes:
                                 dongSplit[idx] = pre + d + '동'
                             else:
                                 dongSplit[idx] = d + '동'
+                        if alterGu != "":
+                            dongSplit[idx] = dongSplit[idx] + "_" + alterGu
                     temp['dong'].extend(dongSplit)
         # print(temp)
 
         for d in temp['dong']:
+
+            if '_' in d :
+                temp['gu'] = d.split('_')[1]
+                d = d.split('_')[0]
+
             district_ref = db.collection(u'district')
             query_ref = district_ref.where(u'Si', u'==', temp['si']) \
                 .where(u'Gu', u'==', temp['gu'])\
@@ -380,7 +449,17 @@ for code in cityCodes:
         temp['dong'] = list()
 
         for dong in tempDong:
+            # 괄호 안에 지역
+            alterGu = ""
+
+            # 괄호가 있으면
+            if '(' in dong:
+                alterGu = re.findall('\(([^)]+)', dong)[0]
+                dong = re.sub(r'\([^)]*\)', '', dong)
+
             if '·' not in dong:
+                if alterGu != "":
+                    dong = dong + "_" + alterGu
                 temp['dong'].append(dong)
             else:
                 if '종로' in dong:
@@ -417,6 +496,8 @@ for code in cityCodes:
                                 dongSplit[idx] = pre + d + '가동'
                             else:
                                 dongSplit[idx] = d + '가동'
+                        if alterGu != "":
+                            dongSplit[idx] = dongSplit[idx] + "_" + alterGu
                     temp['dong'].extend(dongSplit)
                 else:
                     dongSplit = dong.split('·')
@@ -435,12 +516,17 @@ for code in cityCodes:
                                 dongSplit[idx] = pre + d + '동'
                             else:
                                 dongSplit[idx] = d + '동'
+                        if alterGu != "":
+                            dongSplit[idx] = dongSplit[idx] + "_" + alterGu
                     temp['dong'].extend(dongSplit)
         # print(temp)
 
-
-
         for d in temp['dong']:
+
+            if '_' in d :
+                temp['gu'] = d.split('_')[1]
+                d = d.split('_')[0]
+
             district_ref = db.collection(u'district')
             query_ref = district_ref.where(u'Si', u'==', temp['si']) \
                 .where(u'Gu', u'==', temp['gu'])\
